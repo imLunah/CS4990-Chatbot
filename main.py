@@ -1,48 +1,31 @@
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+from ai import Gemini
+from typing import List, Literal
+from pydantic import BaseModel
+import json
 
 app = FastAPI()
+gemini = Gemini()
 
+class Content(BaseModel):
+    role: Literal["user", "model"]
+    parts: List[str]
 
-@app.get("/chat/{user_id}")
-async def chat(
-    user_id: int,
-    message: str,
-    chat_id: int | None = None,
-):
-    return {
-        "user_id": user_id,
-        "message": message,
-        "chat_id": chat_id,
-    }
+class ChatHistory(BaseModel):
+    content: List[Content]
 
-
-@app.get("/chat/history/{user_id}")
-async def chat_history(user_id: int):
-    return {
-        "user_id": user_id,
-        "message": "Chat history",
-    }
-
-
-@app.get("/login")
-async def login():
-    return {
-        "message": "Login",
-    }
-
-
-@app.get("/logout")
-async def logout():
-    return {
-        "message": "Logout",
-    }
-
-
-@app.get("/register")
-async def register():
-    return {
-        "message": "Register",
-    }
+@app.post("/chat")
+async def test(chat_history: ChatHistory):
+    try:
+        message = chat_history.model_dump()['content']
+        response = gemini.chat(message)
+        def generate():
+            for part in response:
+                yield from part.text
+        return StreamingResponse(generate(), media_type="text/plain")
+    except Exception as e:
+        return {"error": str(e)}
 
 
 if __name__ == "__main__":
