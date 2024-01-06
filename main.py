@@ -23,11 +23,13 @@ async def chat_history(user_id: int):
         "message": "Chat history",
     }
 
+
 @app.get("/login")
 async def login():
     return {
         "message": "Login",
     }
+
 
 @app.get("/logout")
 async def logout():
@@ -35,8 +37,21 @@ async def logout():
         "message": "Logout",
     }
 
+
 @app.get("/register")
 async def register():
     return {
         "message": "Register",
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", type=int, default=8000, help="Port to run the server on")
+    args = parser.parse_args()
+    port = args.p
+
+    uvicorn.run(app, host="127.0.0.1", port=port)

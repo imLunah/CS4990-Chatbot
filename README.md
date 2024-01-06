@@ -6,11 +6,11 @@ pip install -r requirements.txt
 
 # 2. Run the app
 ```bash
-uvicorn main:app --reload
+python main.py
 ```
-The default port is set to 8000. To run the server on a different port, use the --port option. For example:
+The default port is set to 8000. To run the server on a different port, use the -p option. For example:
 ```bash
-uvicorn main:app --reload --port 8080
+python main.py -p 8080
 ```
 
 # 3. Access the API documentation
