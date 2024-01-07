@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Demo chat</title>
+
+    <style>
+        #message-window {
+            width: 1000px;
+            height: 800px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            overflow-y: scroll;
+        }
+
+        #message-input {
+            width: 800px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="message-window"></div>
+    <input id="message-input" type="text" placeholder="Type your message here...">
+    <button onclick="submitForm(event)">Send</button>
+
+    <script>
+        document.getElementById('message-input').addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+
+                submitForm(event);
+            }
+        });
+
+        // Create a chat history object
+        // This object will be used to keep track of the conversation for multi-turn conversations
+        let chatHistory = {
+            "content": []
+        };
+
+        function submitForm(event) {
+            event.preventDefault();
+            var message = document.getElementById('message-input').value;
+
+            // The user's message is added as a new object with the role 'user' and the content of the message
+            chatHistory.content.push({
+                "role": "user",
+                "parts": [message]
+            });
+
+            let messageElement = document.createElement('p');
+            messageElement.textContent = message;
+            document.getElementById('message-window').appendChild(messageElement);
+
+            let data = JSON.stringify(
+                {
+                    "content": chatHistory.content
+                }
+            );
+
+            // replace the URL below
+            fetch('http://localhost:8000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data
+            })
+                .then(response => {
+                    // The response from the API is a ReadableStream
+                    // This allows for the data to be read in chunks as it is being received
+                    const reader = response.body.getReader();
+                    let responseElement = document.getElementById('response');
+                    let chunks = '';
+
+                    let tempElement = document.createElement('p');
+                    document.getElementById('message-window').appendChild(tempElement);
+
+                    // // Start reading the response from the API
+                    // The response is read in chunks to allow for dynamic display of the model's response
+                    return reader.read().then(function processText({ done, value }) {
+                        // check to see if the response has been fully received
+                        if (done) {
+                            // The model's response is added as a new object with the role 'model' 
+                            // and the content of the response
+                            chatHistory.content.push({
+                                "role": "model",
+                                "parts": [chunks]
+                            });
+
+                            let responseElement = document.createElement('p');
+                            responseElement.textContent = chunks;
+                            document.getElementById('message-window').replaceChild(responseElement, tempElement);
+
+                            return;
+                        }
+                        let chunk = new TextDecoder('utf-8').decode(value);
+                        chunks += chunk;
+
+                        tempElement.textContent = chunks;
+
+                        // Continue reading the next chunk of the response
+                        return reader.read().then(processText);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+
+            document.getElementById('message-input').value = '';
+        }
+    </script>
+</body>
+
+</html>

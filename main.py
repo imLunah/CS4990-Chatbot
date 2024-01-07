@@ -3,9 +3,18 @@ from fastapi.responses import StreamingResponse
 from ai import Gemini
 from typing import List, Literal
 from pydantic import BaseModel
-import json
+import fastapi.middleware.cors as CORS
 
 app = FastAPI()
+app.add_middleware(
+    CORS.CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
+
+
 gemini = Gemini()
 
 class Content(BaseModel):
