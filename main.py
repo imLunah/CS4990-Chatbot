@@ -25,7 +25,7 @@ class ChatHistory(BaseModel):
     content: List[Content]
 
 @app.post("/chat")
-async def test(chat_history: ChatHistory):
+async def chat(chat_history: ChatHistory):
     try:
         message = chat_history.model_dump()['content']
         response = gemini.chat(message)
@@ -35,6 +35,14 @@ async def test(chat_history: ChatHistory):
         return StreamingResponse(generate(), media_type="text/plain")
     except Exception as e:
         return {"error": str(e)}
+    
+@app.post("/register")
+async def register(user_id: str, password: str):
+    pass
+
+@app.post("/login")
+async def login(user_id: str, password: str):
+    pass
 
 
 if __name__ == "__main__":
