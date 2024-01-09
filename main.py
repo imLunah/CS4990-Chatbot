@@ -8,7 +8,7 @@ from ai import Gemini
 from db import ChatDB
 
 # models
-from models import TokenData, User, ChatHistory, Token
+from models import TokenData, User,UserIn, ChatHistory, Token
 
 # authentication
 from fastapi.security import OAuth2PasswordRequestForm
@@ -72,7 +72,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @app.post("/chat")
-async def chat(chat_history: ChatHistory, current_user=Depends(get_current_user)):
+async def chat(chat_history: ChatHistory, _=Depends(get_current_user)):
     try:
         message = chat_history.model_dump()["content"]
         response = gemini.chat(message)
@@ -84,6 +84,32 @@ async def chat(chat_history: ChatHistory, current_user=Depends(get_current_user)
         return StreamingResponse(generate(), media_type="text/plain")
     except Exception as e:
         return HTTPException(status_code=400, detail=str(e))
+    
+@app.post("/user/me/conversations/{conversation_id}")
+async def save_chat(
+    chat_history: ChatHistory,
+    current_user: User = Depends(get_current_user),
+    conversation_id: int = 0,
+):
+    try:
+        chat_db.save_chat(current_user.user_id, chat_history.model_dump()["content"], conversation_id)
+    except Exception as e:
+        return HTTPException(status_code=400, detail=str(e))
+    return {"status": "success"}
+    
+@app.get("/user/me/conversations")
+async def get_all_conversation_titles(current_user: User = Depends(get_current_user)):
+    try: 
+        return chat_db.get_all_conversation_titles(current_user.user_id)
+    except Exception as e:
+        return HTTPException(status_code=400, detail=str(e))
+
+@app.get("/user/me/conversations/{conversation_id}")
+async def get_conversation(current_user: User = Depends(get_current_user), conversation_id: int = 0):
+    try:
+        return chat_db.get_conversation(current_user.user_id, conversation_id)
+    except Exception as e:
+        return HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/user/me/", response_model=User)
@@ -92,11 +118,11 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
 
 
 @app.post("/register")
-async def register(user_id: str, password: str):
-    hashed_password = auth.get_password_hash(password)
+async def register(user: UserIn):
+    hashed_password = auth.get_password_hash(user.password)
 
     try:
-        chat_db.create_user(user_id, hashed_password)
+        chat_db.create_user(user.user_id, hashed_password)
     except Exception as e:
         return HTTPException(status_code=400, detail=str(e))
 

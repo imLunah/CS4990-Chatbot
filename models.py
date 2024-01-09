@@ -12,6 +12,9 @@ class Token(BaseModel):
 class User(BaseModel):
     user_id: str
 
+class UserIn(User):
+    password: str
+
 class UserInDB(User):
     hashed_password: str
 

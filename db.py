@@ -63,8 +63,7 @@ class ChatDB:
             )
             conversations.append(
                 {
-                    # TODO add title chat_history[0]['parts'][0]
-                    "title": "sds",
+                    "title": chat_history[0]['parts'][0],
                     "conversation_id": max_conversation_id + 1,
                     "content": chat_history,
                 }
@@ -74,6 +73,7 @@ class ChatDB:
             for i, conversation in enumerate(conversations):
                 if int(conversation["conversation_id"]) == conversation_id:
                     conversations[i]["content"] = chat_history
+                    conversations[i]["title"] = chat_history[0]['parts'][0]
                     not_found = False
                     break
 
@@ -104,9 +104,27 @@ class ChatDB:
             ExpressionAttributeValues={":c": conversations},
         )
 
-    def retrieve_chat_history(self, user_id: str) -> list[dict]:
+    def get_conversation(self, user_id: str, conversation_id: int) -> list[dict]:
         if not self.is_user_exist(user_id):
             raise Exception("User does not exist")
 
         response = self.table.get_item(Key={"user_id": user_id})
-        return response["Item"]["conversations"]
+        conversations = response["Item"]["conversations"]
+
+        for conversation in conversations:
+            if conversation["conversation_id"] == conversation_id:
+                return conversation["content"]
+            
+        raise Exception("Conversation does not exist")
+    
+    def get_all_conversation_titles(self, user_id: str) -> list[dict]:
+        if not self.is_user_exist(user_id):
+            raise Exception("User does not exist")
+
+        response = self.table.get_item(Key={"user_id": user_id})
+        conversations = response["Item"]["conversations"]
+
+        return [
+            {"conversation_id": c["conversation_id"], "title": c["title"]}
+            for c in conversations
+        ]
