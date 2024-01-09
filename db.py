@@ -9,6 +9,13 @@ class ChatDB:
     def is_user_exist(self, user_id: str):
         response = self.table.get_item(Key={"user_id": user_id})
         return "Item" in response
+    
+    def get_user_hashed_password(self, user_id: str):
+        if not self.is_user_exist(user_id):
+            raise Exception("User does not exist")
+        
+        response = self.table.get_item(Key={"user_id": user_id})
+        return response["Item"]["hashed_password"]
 
     def is_login_valid(self, user_id: str, hashed_password: str):
         response = self.table.get_item(Key={"user_id": user_id})
