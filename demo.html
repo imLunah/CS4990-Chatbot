@@ -151,6 +151,10 @@
                 body: data
             })
                 .then(response => {
+                    if (!response.ok) {
+                        alert('Something went wrong. Please try again.');
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                     // The response from the API is a ReadableStream
                     // This allows for the data to be read in chunks as it is being received
                     const reader = response.body.getReader();
@@ -202,7 +206,10 @@
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
             })
-                .then(response => response.json())
+                .then(response => {
+                    return response.json();
+                
+                })
                 .then(data => {
                     let conversationListElement = document.getElementById('conversation-list');
                     conversationListElement.innerHTML = '';
@@ -230,7 +237,11 @@
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
                 .then(data => {
                     chatHistory.content = data;
                     let messageWindowElement = document.getElementById('message-window');
@@ -257,7 +268,12 @@
                 },
                 body: JSON.stringify(chatHistory)
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                
+                })
                 .then(data => {
                     console.log(data);
                 })
