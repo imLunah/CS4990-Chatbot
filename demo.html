@@ -7,7 +7,7 @@
     <style>
         #message-window {
             width: 1000px;
-            height: 800px;
+            height: 600px;
             border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 10px;
@@ -22,14 +22,93 @@
 </head>
 
 <body>
+    <div id="auth">
+        <input id="register-user-id" type="text" placeholder="User ID for registration">
+        <input id="register-password" type="password" placeholder="Password for registration">
+        <button onclick="register(event)">Register</button>
+
+        <input id="login-user-id" type="text" placeholder="User ID for login">
+        <input id="login-password" type="password" placeholder="Password for login">
+        <button onclick="login(event)">Login</button>
+    </div>
+
+
     <div id="message-window"></div>
     <input id="message-input" type="text" placeholder="Type your message here...">
     <button onclick="submitForm(event)">Send</button>
 
+    <button onclick="newConversation(event)" id="new-conversation-button">New Conversation</button>
+    <div id="conversation-list"></div>
+
     <script>
+        function register(event) {
+            event.preventDefault();
+            var userId = document.getElementById('register-user-id').value;
+            var password = document.getElementById('register-password').value;
+
+            fetch('http://ec2-18-224-51-247.us-east-2.compute.amazonaws.com:8000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: userId, password })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Registration successful');
+                    console.log(data)
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Registration failed');
+                });
+        }
+
+        function login(event) {
+            event.preventDefault();
+            var userId = document.getElementById('login-user-id').value;
+            var password = document.getElementById('login-password').value;
+
+            fetch('http://ec2-18-224-51-247.us-east-2.compute.amazonaws.com:8000/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `username=${encodeURIComponent(userId)}&password=${encodeURIComponent(password)}&grant_type=password`
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Login successful');
+                    localStorage.setItem('token', data.access_token);
+                    // reload the page to show the conversation list
+                    location.reload();
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Login failed');
+                });
+        }
+
+
         document.getElementById('message-input').addEventListener('keypress', function (event) {
+            var input = document.getElementById('message-input').value;
+
             if (event.key === 'Enter') {
                 event.preventDefault();
+
+                if (input == '') {
+                    return;
+                }
 
                 submitForm(event);
             }
@@ -40,6 +119,8 @@
         let chatHistory = {
             "content": []
         };
+
+        let currentConversationId = null;
 
         function submitForm(event) {
             event.preventDefault();
@@ -61,11 +142,11 @@
                 }
             );
 
-            // replace the URL below
-            fetch('http://localhost:8000/chat', {
+            fetch('http://ec2-18-224-51-247.us-east-2.compute.amazonaws.com:8000/chat', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 },
                 body: data
             })
@@ -95,6 +176,7 @@
                             responseElement.textContent = chunks;
                             document.getElementById('message-window').replaceChild(responseElement, tempElement);
 
+                            saveChat(chatHistory);
                             return;
                         }
                         let chunk = new TextDecoder('utf-8').decode(value);
@@ -112,6 +194,90 @@
 
             document.getElementById('message-input').value = '';
         }
+
+        function getAllConversationTitles() {
+            fetch('http://ec2-18-224-51-247.us-east-2.compute.amazonaws.com:8000/user/me/conversations', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    let conversationListElement = document.getElementById('conversation-list');
+                    conversationListElement.innerHTML = '';
+
+                    data.forEach(conversation => {
+                        let conversationElement = document.createElement('p');
+                        conversationElement.textContent = conversation.title;
+                        conversationElement.addEventListener('click', function () {
+                            currentConversationId = conversation.conversation_id;
+                            getConversation(conversation.conversation_id);
+                        });
+
+                        conversationListElement.appendChild(conversationElement);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function getConversation(conversationId) {
+            fetch(`http://ec2-18-224-51-247.us-east-2.compute.amazonaws.com:8000/user/me/conversations/${conversationId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    chatHistory.content = data;
+                    let messageWindowElement = document.getElementById('message-window');
+                    messageWindowElement.innerHTML = '';
+
+                    data.forEach(message => {
+                        let messageElement = document.createElement('p');
+                        messageElement.textContent = message.parts.join(' ');
+
+                        messageWindowElement.appendChild(messageElement);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function saveChat(chatHistory) {
+            fetch(`http://ec2-18-224-51-247.us-east-2.compute.amazonaws.com:8000/user/me/conversations/${currentConversationId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(chatHistory)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function newConversation(event) {
+            document.getElementById('message-window').innerHTML = '';
+
+            currentConversationId = 0;
+            chatHistory.content = [];
+            saveChat(chatHistory);
+
+            getAllConversationTitles();
+        }
+
+        // Call getAllConversationTitles when the page loads
+        window.onload = getAllConversationTitles;
     </script>
 </body>
 
