@@ -63,7 +63,7 @@ class ChatDB:
             )
             conversations.append(
                 {
-                    "title": chat_history[0]['parts'][0],
+                    "title": chat_history[0]['parts'][0] if len(chat_history) > 0 else "New Conversation",
                     "conversation_id": max_conversation_id + 1,
                     "content": chat_history,
                 }
