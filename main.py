@@ -83,7 +83,7 @@ async def chat(chat_history: ChatHistory, _=Depends(get_current_user)):
 
         return StreamingResponse(generate(), media_type="text/plain")
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     
 @app.post("/user/me/conversations/{conversation_id}")
 async def save_chat(
@@ -94,7 +94,18 @@ async def save_chat(
     try:
         chat_db.save_chat(current_user.user_id, chat_history.model_dump()["content"], conversation_id)
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"status": "success"}
+
+@app.delete("/user/me/conversations/{conversation_id}")
+async def delete_conversation(
+    current_user: User = Depends(get_current_user),
+    conversation_id: int = 0,
+):
+    try:
+        chat_db.delete_conversation(current_user.user_id, conversation_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"status": "success"}
     
 @app.get("/user/me/conversations")
@@ -102,14 +113,14 @@ async def get_all_conversation_titles(current_user: User = Depends(get_current_u
     try: 
         return chat_db.get_all_conversation_titles(current_user.user_id)
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/user/me/conversations/{conversation_id}")
 async def get_conversation(current_user: User = Depends(get_current_user), conversation_id: int = 0):
     try:
         return chat_db.get_conversation(current_user.user_id, conversation_id)
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/user/me/", response_model=User)
@@ -124,7 +135,7 @@ async def register(user: UserIn):
     try:
         chat_db.create_user(user.user_id, hashed_password)
     except Exception as e:
-        return HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
     return {"status": "success"}
 
