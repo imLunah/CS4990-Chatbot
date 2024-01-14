@@ -1,44 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <title>Demo chat</title>
-
-    <style>
-        #message-window {
-            width: 1000px;
-            height: 600px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            overflow-y: scroll;
-        }
-
-        #message-input {
-            width: 800px;
-            margin-bottom: 10px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div id="auth">
-        <input id="register-user-id" type="text" placeholder="User ID for registration">
-        <input id="register-password" type="password" placeholder="Password for registration">
-        <button onclick="register(event)">Register</button>
+    <!-- Bootstrap Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="demo.html">Chatbot Demo</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#registerModal">Register</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-        <input id="login-user-id" type="text" placeholder="User ID for login">
-        <input id="login-password" type="password" placeholder="Password for login">
-        <button onclick="login(event)">Login</button>
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="login-user-id" class="user-id-style">User ID</label>
+                            <input type="text" class="form-control" id="login-user-id" placeholder="Enter User ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password" class="login-password-style">Password</label>
+                            <input type="password" class="form-control" id="login-password" placeholder="Enter Password">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="login(event)">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerModalLabel">Register</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="register-user-id" class="user-id-style">User ID</label>
+                            <input type="text" class="form-control" id="register-user-id" placeholder="Enter User ID for registration">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password" class="login-password-style">Password</label>
+                            <input type="password" class="form-control" id="register-password" placeholder="Enter Password for registration">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="register(event)">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Commented this out since I implemented the bootstrap and it now is redundant -->
+
+    <!-- <div id="auth" class="container">
+        <input id="register-user-id" type="text" placeholder="User ID for registration" class="form-control">
+        <input id="register-password" type="password" placeholder="Password for registration" class="form-control">
+        <button onclick="register(event)" id="register-button" class="btn btn-primary">Register</button>
+
+        <input id="login-user-id" type="text" placeholder="User ID for login" class="form-control">
+        <input id="login-password" type="password" placeholder="Password for login" class="form-control">
+        <button onclick="login(event)" id="login-button" class="btn btn-primary">Login</button>
+    </div> -->
 
     <div id="message-window"></div>
-    <input id="message-input" type="text" placeholder="Type your message here...">
-    <button onclick="submitForm(event)">Send</button>
 
-    <button onclick="newConversation(event)" id="new-conversation-button">New Conversation</button>
+    <div id="message-input-container">
+        <input id="message-input" type="text" placeholder="Type your message here..." class="form-control">
+        <button onclick="submitForm(event)" id="send-button" class="btn btn-primary">Send</button>
+    </div>
+    <div id="new-conversation-button-box">
+        <button onclick="newConversation(event)" id="new-conversation-button" class="btn btn-primary">New Conversation</button>
+    </div>
+
     <div id="conversation-list"></div>
+
+    <!-- Include Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
         function register(event) {
@@ -298,3 +374,6 @@
 </body>
 
 </html>
+
+
+    

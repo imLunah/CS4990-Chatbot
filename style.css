@@ -1,0 +1,144 @@
+body {
+    background-color: rgb(27, 27, 27);
+    height:100%;
+    width:100%;
+    margin:0 auto;
+    font-family: "Open Sans";
+}
+
+/* Add a media query for smaller screens */
+@media only screen and (max-width: 768px) {
+    #auth {
+        flex-direction: column; /* Stack items vertically on smaller screens */
+        align-items: center; /* Center items horizontally on smaller screens */
+    }
+
+    #register-user-id, #register-password, #login-user-id, #login-password, #register-button, #login-button {
+        width: 100%; /* Make inputs and buttons full width on smaller screens */
+        margin-bottom: 10px; /* Add some margin between items */
+    }
+
+    #new-conversation-button-box {
+        position:relative;
+    }
+}
+
+/* Start of Bootstrap styling */
+.modal-content {
+    background-color: rgb(27, 27, 27);
+}
+
+.modal-title, .user-id-style, .login-password-style {
+    color:white;
+}
+
+/* End of Bootstrap styling */
+#register-user-id, #register-password, #login-user-id, #login-password {
+    background-color: rgb(27, 27, 27);
+    font-size: 15px;
+    color:white;
+    outline:none;
+    
+}
+
+/* removes white outline when clicking on input*/
+#auth {
+    display: flex;
+    justify-content: center;
+    margin: 20px; 
+}
+
+
+#register-button, #login-button {
+    border-style:solid;
+    border-radius:0;
+    border-color:#727375;
+    background-color: rgb(27,27,27);
+    border-width:2px;
+    color: #727375; 
+    
+}
+
+#message-window {
+    width: 100%;
+    max-width: 1000px;
+    height: 700px; /* Adjust the height for better responsiveness */
+    border: 1px solid #727375;
+    margin: 0 auto;
+    margin-top: 20px;
+    overflow-y: hidden;
+}
+
+
+#message-window p {
+    color:white;
+}
+
+#message-input {
+    width: calc(100% - 20px);
+    max-width: 1000px;
+    background-color: rgb(27, 27, 27);
+    color: white;
+    display: inline-block; /* Change from inline to inline-block */
+    margin-left:10px;
+    border:none;
+
+}
+
+/* removes white outline when clicking on input*/
+#message-input:focus {
+    outline:none;
+}
+
+#send-button {
+    border-radius: 100px;
+    padding: 12px 20px; /* Adjust padding for better size */
+    font-size: 16px; /* Adjust font size for better visibility */
+    color: rgb(90, 90, 90);
+    background-color: rgb(27, 27, 27);
+    border: 1px solid rgb(90, 90, 90);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+#send-button:hover {
+    background-color:#383838;
+    border-color:#383838;
+}
+
+#message-input-container {
+    display: flex;
+    align-items: center;
+    margin:0 auto;
+    justify-content: space-between;
+    width: calc(100% - 20px);
+    max-width: 1000px;
+    margin-top: 10px;
+    border: 1px solid #727375;
+    border-radius:100px;
+}
+
+#new-conversation-button {
+    margin-top:10px;
+    border-radius: 20px;
+    padding: 12px 20px;
+    font-size: 16px;
+    width: 180px;
+    color: rgb(90, 90, 90);
+    background-color: rgb(27, 27, 27);
+    border: 1px solid rgb(27, 27, 27);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+#new-conversation-button-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+#new-conversation-button:hover {
+    background-color:#383838;
+    border-color:#383838;
+}
+
+
