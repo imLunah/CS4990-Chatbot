@@ -87,7 +87,7 @@ body {
 
 /* removes white outline when clicking on input*/
 #message-input:focus {
-    outline:none;
+    box-shadow:none;
 }
 
 #send-button {
