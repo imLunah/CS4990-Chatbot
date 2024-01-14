@@ -85,8 +85,8 @@ body {
 
 }
 
-/* removes white outline when clicking on input*/
-#message-input:focus {
+/* removes outline when clicking */
+#message-input:focus, #send-button:focus, #new-conversation-button:focus {
     box-shadow:none;
 }
 
