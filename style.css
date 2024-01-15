@@ -4,10 +4,12 @@ body {
     width:100%;
     margin:0 auto;
     font-family: "Open Sans";
+    display:flex;
+    flex-direction: column;
 }
 
 /* Add a media query for smaller screens */
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 410px) {
     #auth {
         flex-direction: column; /* Stack items vertically on smaller screens */
         align-items: center; /* Center items horizontally on smaller screens */
@@ -16,10 +18,6 @@ body {
     #register-user-id, #register-password, #login-user-id, #login-password, #register-button, #login-button {
         width: 100%; /* Make inputs and buttons full width on smaller screens */
         margin-bottom: 10px; /* Add some margin between items */
-    }
-
-    #new-conversation-button-box {
-        position:relative;
     }
 }
 
@@ -30,6 +28,36 @@ body {
 
 .modal-title, .user-id-style, .login-password-style {
     color:white;
+}
+
+nav.navbar {
+    margin-bottom: 20px; /* Adjust the margin to add space to the entire navbar */
+}
+
+/* Center the navbar content */
+.navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-weight:bold;
+}
+
+/* Center the title with the input box */
+.navbar-brand {
+    margin-right: auto; /* Push the brand to the left as much as possible */
+    margin-left: auto; /* Push the brand to the right as much as possible */
+}
+
+#vertical-nav {
+    width: 200px;
+    background-color: rgb(27, 27, 27);
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index:1000
 }
 
 /* End of Bootstrap styling */
@@ -48,7 +76,6 @@ body {
     margin: 20px; 
 }
 
-
 #register-button, #login-button {
     border-style:solid;
     border-radius:0;
@@ -66,7 +93,37 @@ body {
     border: 1px solid #727375;
     margin: 0 auto;
     margin-top: 20px;
-    overflow-y: hidden;
+    overflow-y: auto;
+    padding:50px;
+}
+
+#message-window .ai-response {
+    color: #3498db; /* Change the color to your desired color for AI responses */
+    font-style: italic; /* Make AI responses italic (optional) */
+}
+
+.ai-label {
+    font-weight:bold;
+    
+}
+
+.message-label {
+    font-weight: bold;
+    margin-bottom: 3px; /* Adjusted margin for closer appearance */
+}
+
+
+#message-window::-webkit-scrollbar {
+    width: 5px; /* Width of the scrollbar */
+}
+
+#message-window::-webkit-scrollbar-thumb {
+    background-color: #727375; /* Color of the thumb */
+    border-radius: 6px; /* Border radius of the thumb */
+}
+
+#message-window::-webkit-scrollbar-track {
+    background-color: rgb(27, 27, 27); /* Color of the track */
 }
 
 
@@ -75,7 +132,7 @@ body {
 }
 
 #message-input {
-    width: calc(100% - 20px);
+    width: calc(100% - 25px);
     max-width: 1000px;
     background-color: rgb(27, 27, 27);
     color: white;
@@ -122,17 +179,19 @@ body {
     border-radius: 20px;
     padding: 12px 20px;
     font-size: 16px;
+    font-weight:bold;
     width: 180px;
-    color: rgb(90, 90, 90);
+    color: white;
     background-color: rgb(27, 27, 27);
     border: 1px solid rgb(27, 27, 27);
     transition: background-color 0.2s, border-color 0.2s;
 }
 
 #new-conversation-button-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: fixed;
+    top: 10px; /* Adjust the top position as needed */
+    left: 10px; /* Adjust the left position as needed */
+    z-index: 1000; /* Ensure it's above other elements */
     
 }
 
@@ -141,4 +200,48 @@ body {
     border-color:#383838;
 }
 
+#previous-convos {
+    color: #727375;
+    margin-bottom: 5px;
+    font-weight: bold;
+    margin-bottom:5px;
+    font-size:10px;
 
+}
+
+#conversation-list p:hover {
+    cursor: pointer;
+    border: 2px solid #727375;
+    border-radius: 5px;
+}
+
+#conversation-list p {
+    color:white;
+}
+
+#conversation-list {
+    overflow-y: auto; /* Add overflow-y property to enable vertical scrolling */
+    max-height: 80vh; /* Set a maximum height for the scrollable area */
+    
+}
+
+/* make it scrollable */
+
+#conversation-list::-webkit-scrollbar {
+    width: 5px; /* Width of the scrollbar */
+}
+
+#conversation-list::-webkit-scrollbar-thumb {
+    background-color: #727375; /* Color of the thumb */
+    border-radius: 6px; /* Border radius of the thumb */
+}
+
+#conversation-list::-webkit-scrollbar-track {
+    background-color: rgb(27, 27, 27); /* Color of the track */
+}
+
+/* For Firefox */
+#conversation-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(27, 27, 27);
+}

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Demo chat</title>
+    <title>QuackGPT 3.5</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Include Bootstrap CSS -->
@@ -14,9 +14,26 @@
 </head>
 
 <body>
+
+    <navbar id="vertical-nav" class="navbar-toggler">
+    
+
+        <div>
+            <button onclick="newConversation(event)" id="new-conversation-button" class="btn btn-primary">New Conversation</button>
+        </div>
+        <div id="conversation-box">
+            <!-- "Previous Convos" text -->
+            <p id="previous-convos">Previous Convos</p>
+            <!-- Conversation titles go here -->
+            <div id="conversation-list">
+            </div>
+        </div>
+    </navbar>
     <!-- Bootstrap Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <a class="navbar-brand" href="demo.html">Chatbot Demo</a>
+        <div class="navbar-content">
+            <a class="navbar-brand" href="demo.html">QuackGPT 3.5</a>
+        </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -110,6 +127,7 @@
     </div>
 
     <div id="conversation-list"></div>
+    <p id="previous-convos">Previous Conversations</p>
 
     <!-- Include Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -175,7 +193,6 @@
                 });
         }
 
-
         document.getElementById('message-input').addEventListener('keypress', function (event) {
             var input = document.getElementById('message-input').value;
 
@@ -201,6 +218,11 @@
         function submitForm(event) {
             event.preventDefault();
             var message = document.getElementById('message-input').value;
+
+            let youLabelElement = document.createElement('p');
+            youLabelElement.textContent = 'You';
+            youLabelElement.classList.add('message-label');
+            document.getElementById('message-window').appendChild(youLabelElement);
 
             // The user's message is added as a new object with the role 'user' and the content of the message
             chatHistory.content.push({
@@ -245,6 +267,11 @@
                     return reader.read().then(function processText({ done, value }) {
                         // check to see if the response has been fully received
                         if (done) {
+                             // Add "AI" label above AI response
+                            let aiLabelElement = document.createElement('p');
+                            aiLabelElement.textContent = 'QuackGPT';
+                            aiLabelElement.classList.add('message-label');
+                            document.getElementById('message-window').insertBefore(aiLabelElement, tempElement);
                             // The model's response is added as a new object with the role 'model' 
                             // and the content of the response
                             chatHistory.content.push({
@@ -254,6 +281,7 @@
 
                             let responseElement = document.createElement('p');
                             responseElement.textContent = chunks;
+                            responseElement.classList.add('ai-response'); // Add the class 'ai-response' for AI responses
                             document.getElementById('message-window').replaceChild(responseElement, tempElement);
 
                             saveChat(chatHistory);
