@@ -16,8 +16,6 @@
 <body>
 
     <navbar id="vertical-nav" class="navbar-toggler">
-    
-
         <div>
             <button onclick="newConversation(event)" id="new-conversation-button" class="btn btn-primary">New Conversation</button>
         </div>
@@ -122,12 +120,12 @@
         <input id="message-input" type="text" placeholder="Type your message here..." class="form-control">
         <button onclick="submitForm(event)" id="send-button" class="btn btn-primary">Send</button>
     </div>
-    <div id="new-conversation-button-box">
-        <button onclick="newConversation(event)" id="new-conversation-button" class="btn btn-primary">New Conversation</button>
-    </div>
+    <!-- <div id="div-conversation-button-box"> -->
+        <!-- <button onclick="newConversation(event)" id="new-conversation-button" class="btn btn-primary">New Conversation</button> -->
+    <!-- </div> -->
 
-    <div id="conversation-list"></div>
-    <p id="previous-convos">Previous Conversations</p>
+    <!-- <div id="conversation-list"></div> -->
+    <!-- <p id="previous-convos">Previous Conversations</p> -->
 
     <!-- Include Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -345,6 +343,7 @@
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
+                    return (response.json());
                 })
                 .then(data => {
                     chatHistory.content = data;
@@ -376,8 +375,9 @@
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                
+                    then (response.json());
                 })
+                
                 .then(data => {
                     console.log(data);
                 })
