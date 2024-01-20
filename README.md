@@ -1,7 +1,7 @@
 # QuackGPT
 A chatbot designed around Google Gemini's model for learning, brainstorming ideas, or even just a friendly conversation partner. Its goal is to enhance user interactions and provide a conversational AI experience that is both entertaining and informative.
 
-<img src="quackgpt.gif"> 
+<img src="preview.gif"> 
 
 **Python 3.10+**
 # 1. Install Dependencies
